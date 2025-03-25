@@ -38,13 +38,16 @@ app.post("/register-nodemcu", (req, res) => {
 });
 
 // 📌 Notify NodeMCU When a New Email is Detected
-function notifyNodeMCU() {
+function notifyNodeMCU(email, subject) {
     if (!nodemcuIp) {
         console.error("❌ No NodeMCU IP found!");
         return;
     }
 
-    fetch(`http://${nodemcuIp}/email-alert`)
+    const encodedEmail = encodeURIComponent(email);
+    const encodedSubject = encodeURIComponent(subject);
+    
+    fetch(`http://${nodemcuIp}/email-alert?email=${encodedEmail}&subject=${encodedSubject}`)
         .then(() => console.log("📩 ✅ NodeMCU Notified!"))
         .catch((err) => console.error("❌ Error notifying NodeMCU:", err));
 }
@@ -99,12 +102,21 @@ function checkEmails() {
                                 }
 
                                 const from = parsed.from.text;
+                                const subject = parsed.subject || "No Subject";
+                                
                                 console.log(`📧 New email from: ${from}`);
+                                console.log(`📜 Subject: ${subject}`);
 
                                 if (allowedSenders.some((sender) => from.includes(sender))) {
                                     console.log("✅ Email from allowed sender:", from);
                                     newMail = true;
+                                    notifyNodeMCU(from, subject);
                                 }
+                                // const from = parsed.from.text;
+                                // const subject = parsed.subject;
+                                // console.log(`📧 New email from: ${from} - Subject: ${subject}`);
+
+                                // notifyNodeMCU(from, subject);
 
                                 resolve(); // Mark parsing as done
                             });
@@ -119,7 +131,7 @@ function checkEmails() {
                     imap.end();
                     if (newMail) {
                         console.log("📢 Triggering NodeMCU notification...");
-                        notifyNodeMCU();
+                        // notifyNodeMCU();
                     } else {
                         console.log("📭 No allowed sender email detected.");
                     }

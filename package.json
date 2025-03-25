@@ -1,0 +1,24 @@
+{
+  "name": "node_mcu_email_reminder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "imap-simple": "^5.1.0",
+    "mailparser": "^3.7.2",
+    "node-fetch": "^2.7.0",
+    "node-imap": "^0.9.6",
+    "nodemailer": "^6.10.0",
+    "redis": "^4.7.0"
+  }
+}

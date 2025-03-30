@@ -18,7 +18,8 @@ LiquidCrystal lcd2(D4, D3, D5, D6, D7, D8);  // RS, EN, D4, D5, D6, D7
 
 const char* ssid = "PARTH8663";      // Replace with your WiFi SSID
 const char* password = "12345678";   // Replace with your WiFi password
-const char* backendServer = "http://192.168.137.1:5000";  // Replace with your backend URL
+//do minor changes in fetchEmail() and fetchMatchData() (see minor changes in function commented out) when server is hosted somewhere 
+const char* backendServer = "http://192.168.137.1:5000";  // Replace with your backend URL Donot mention port number when server hosted somewhere
 const char* backendServerEmail = "http://192.168.137.1:5000/get-emails";  // Replace with your backend URL
 const char* cricketAPI = "http://192.168.137.1:5000/get-match"; // Replace with actual API
 
@@ -167,8 +168,10 @@ void scrollText(String text, int row,int ledN) {
 
 void fetchEmail() {
     HTTPClient http;
-    WiFiClient client; 
-
+    // WiFiClient client;   //use for local server testing 
+    WiFiClientSecure client; //use when server is hosted
+    client.setInsecure();
+    http.setTimeout(60000);  // Set timeout to 60 seconds (60000 ms)
     http.begin(client,backendServerEmail);
     int httpCode = http.GET();
     if (httpCode == 200) 
@@ -264,8 +267,11 @@ String extractShortNames(String matchStr) {
 
 void fetchMatchData() 
 {
-  WiFiClient client;
   HTTPClient http;
+  // WiFiClient client;   //use for local server testing 
+  WiFiClientSecure client; //use when server is hosted
+  client.setInsecure();
+  http.setTimeout(60000);  // Set timeout to 60 seconds (60000 ms)
   Serial.println("Fetching IPL Data...");
   http.begin(client, cricketAPI); 
   int httpCode = http.GET();

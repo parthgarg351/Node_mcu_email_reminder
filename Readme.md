@@ -87,6 +87,7 @@ Feel free to fork this repository, create a new branch, and submit a pull reques
 ## License
 This project is licensed under the MIT License.
 
+**I am trying to add more features it like showing news and more.**
 ## Author
 **Parth Garg**
 **parthgarg351@gmail.com**

@@ -32,7 +32,7 @@
 ## Setup Instructions
 1. Clone this repository:
    ```sh
-   git clone https://github.com/your-username/your-repo-name.git
+   git clone https://github.com/parthgarg351/Node_mcu_email_reminder
    ```
 2. Install required dependencies:
    ```sh

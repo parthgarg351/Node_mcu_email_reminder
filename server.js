@@ -224,8 +224,8 @@ function checkEmails() {
   imap.connect();
 }
 
-// Run Email Check Every 60 Seconds
-setInterval(checkEmails, 60000);
+// Run Email Check Every 4 Minutes 45 seconds
+setInterval(checkEmails, 285000);
 
 const PORT = 5000;
 

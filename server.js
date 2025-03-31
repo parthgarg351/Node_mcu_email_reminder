@@ -3,20 +3,19 @@ const express = require("express");
 const Imap = require("node-imap");
 const cors = require("cors");
 const fetch = require("node-fetch");
-const { simpleParser } = require("mailparser"); 
+const { simpleParser } = require("mailparser");
 const os = require("os");
 const axios = require("axios");
 const cron = require("node-cron");
-
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-let newsData = [];  // Stores fetched news articles
-let lastSentIndex = 0;  // Tracks the last sent article
+let newsData = []; // Stores fetched news articles
+let lastSentIndex = 0; // Tracks the last sent article
 
-const NEWS_API_URL = process.env.NEWS_API_URL;  // Replace with actual API URL
+const NEWS_API_URL = process.env.NEWS_API_URL; // Replace with actual API URL
 // https://newsapi.org/v2/top-headlines?category=technology&apiKey=<apiKey>
 
 let storedEmails = []; // Store allowed sender emails temporarily
@@ -106,38 +105,38 @@ app.post(
 app.get("/get-match", async (req, res) => {
   try {
     const apiUrl = `${process.env.CRICKET_API_URL}?id=${matchId}`;
-    const response = await axios.get(
-      apiUrl,
-      {
-        headers: {
-          accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-          "accept-encoding": "gzip, deflate, br, zstd",
-          "accept-language": "en-US,en;q=0.9",
-          "cache-control": "max-age=0",
-          cookie:
-            "_vercel_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0RnpRc1l4S3YwRDA3Vlc0bHlZSXRtNnYiLCJpYXQiOjE3NDMzNDgzMjgsIm93bmVySWQiOiJ0ZWFtX0s2Z3o3Vkgyd0w3cHppVUdWanlWand4byIsImF1ZCI6ImNyaWNrZXQtcG9jMDNsdTZ0LXBhcnRoLWdhcmdzLXByb2plY3RzLTcxYzdlZTRmLnZlcmNlbC5hcHAiLCJ1c2VybmFtZSI6InBhcnRoZ2FyZzM1MSIsInN1YiI6InNzby1wcm90ZWN0aW9uIn0.Abzp7WKN6miWr1DbQtFZrlrx0_MGm6YiZOfvLgInbkQ",
-          priority: "u=0, i",
-          "sec-ch-ua": `"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"`,
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": `"Windows"`,
-          "sec-fetch-dest": "document",
-          "sec-fetch-mode": "navigate",
-          "sec-fetch-site": "none",
-          "sec-fetch-user": "?1",
-          "upgrade-insecure-requests": "1",
-          "user-agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-        },
-      }
-    );
+    const response = await axios.get(apiUrl, {
+      headers: {
+        accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "en-US,en;q=0.9",
+        "cache-control": "max-age=0",
+        cookie:
+          "_vercel_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0RnpRc1l4S3YwRDA3Vlc0bHlZSXRtNnYiLCJpYXQiOjE3NDMzNDgzMjgsIm93bmVySWQiOiJ0ZWFtX0s2Z3o3Vkgyd0w3cHppVUdWanlWand4byIsImF1ZCI6ImNyaWNrZXQtcG9jMDNsdTZ0LXBhcnRoLWdhcmdzLXByb2plY3RzLTcxYzdlZTRmLnZlcmNlbC5hcHAiLCJ1c2VybmFtZSI6InBhcnRoZ2FyZzM1MSIsInN1YiI6InNzby1wcm90ZWN0aW9uIn0.Abzp7WKN6miWr1DbQtFZrlrx0_MGm6YiZOfvLgInbkQ",
+        priority: "u=0, i",
+        "sec-ch-ua": `"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"`,
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": `"Windows"`,
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "none",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+      },
+    });
 
     const data = await response.data;
-    console.log("✅ Received Data:", data); 
+    console.log("✅ Received Data:", data);
 
     if (data.livescore === "Data Not Found") {
       return res.json({ message: "Match is not live" });
     }
+    if (data.runrate === "Data Not Found") data.runrate = "--";
+    if (data.batterone === "Data Not Found") data.batterone = "--";
+    if (data.battertwo === "Data Not Found") data.battertwo = "--";
 
     res.json({
       title: data.title || "Unknown Match",
@@ -155,7 +154,7 @@ app.get("/get-match", async (req, res) => {
 
 app.get("/get-emails", (req, res) => {
   res.json(storedEmails);
-  storedEmails = []; 
+  storedEmails = [];
 });
 
 function checkEmails() {
@@ -205,7 +204,7 @@ function checkEmails() {
         let newMail = false;
 
         const fetcher = imap.fetch(latestEmails, { bodies: "" });
-        const emailPromises = []; 
+        const emailPromises = [];
 
         fetcher.on("message", function (msg) {
           const emailPromise = new Promise((resolve) => {
@@ -243,11 +242,11 @@ function checkEmails() {
             });
           });
 
-          emailPromises.push(emailPromise); 
+          emailPromises.push(emailPromise);
         });
 
         fetcher.on("end", async function () {
-          await Promise.all(emailPromises); 
+          await Promise.all(emailPromises);
           imap.end();
           if (newEmails.length > 0) {
             console.log("📢 Triggering NodeMCU notification...");
@@ -272,7 +271,6 @@ function checkEmails() {
   imap.connect();
 }
 
-
 // Run Email Check Every 4 Minutes 45 seconds
 setInterval(checkEmails, 285000);
 
@@ -282,4 +280,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running at http://${localIP}:${PORT}`);
 });
 
-fetchNews();  // Fetch news on startup
+fetchNews(); // Fetch news on startup

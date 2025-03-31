@@ -1,11 +1,13 @@
 # NodeMCU Live Score & Email Notification System
-   - This project is an ESP8266-based notification system that displays emails and live cricket scores on two LCD screens. The system fetches data from a backend server via WiFi and updates the displays accordingly.
+   - This project is an ESP8266-based notification system that displays emails and live cricket scores and News on two LCD screens. The system fetches data from a backend server via WiFi and updates the displays accordingly.
 
 ## Features
 - **WiFi Connectivity**: Connects to a backend server to fetch emails and cricket scores.
 - **Dual LCD Support**: Displays data on a 16x2 LCD (parallel) and a 20x4 LCD (I2C).
 - **Live Cricket Updates**: Retrieves live match scores.
 - **Email Alerts**: Notifies about new emails via LCD and LED blinks.
+- **News Updates**: Displays News if cricket match has not started.
+- **Motivational Quotes**: Displays Quotes if API are not working
 
 ## Components Used
 - **ESP8266 (NodeMCU)**
@@ -43,6 +45,7 @@
    EMAIL_USER=<your_email>
    EMAIL_PASS=<your_app_password>
    CRICKET_API_URL=<api_url>
+   NEWS_API_URL=<api_url>
    ```
 4. **Generate App Password** (for Gmail users):
    - Go to your **Google Account**.
@@ -52,12 +55,16 @@
    - Most cricket APIs are either paid or have limited requests, so it's recommended to host your own API.
    - Refer to this Github Repo https://github.com/sanwebinfo/cricket-api 
    - A big thanks to the owner of this repository 
-6. Start the server:
+6. **Set News API**
+   - Visit https://newsapi.org/
+   - Generate api key
+   - Update .env file with the api link (refrence provided in server.js)
+7. Start the server:
    ```sh
    node server.js
    ```
-7. Connect the components as per the circuit diagram.
-8. Install the following Arduino libraries:
+8. Connect the components as per the circuit diagram.
+9. Install the following Arduino libraries:
    - Wire  
    - LiquidCrystal_I2C  
    - LiquidCrystal  
@@ -66,8 +73,8 @@
    - NTPClient  
    - ArduinoJson  
    - WiFiClientSecure  
-9. Upload the `ESP8266` sketch to the board.
-10. Modify the `ssid` and `password` variables to connect to your WiFi.
+10. Upload the `ESP8266` sketch to the board.
+11. Modify the `ssid` and `password` variables to connect to your WiFi.
 
 ## How to Use
 
@@ -79,7 +86,6 @@
 2. **Set Match on Server**
    - Visit your **server URL**.
    - Enter the **Match ID** and press **Go**.
-
 
 ## Contributing
 Feel free to fork this repository, create a new branch, and submit a pull request!

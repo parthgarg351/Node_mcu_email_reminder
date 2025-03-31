@@ -17,6 +17,7 @@ let newsData = [];  // Stores fetched news articles
 let lastSentIndex = 0;  // Tracks the last sent article
 
 const NEWS_API_URL = process.env.NEWS_API_URL;  // Replace with actual API URL
+// https://newsapi.org/v2/top-headlines?category=technology&apiKey=<apiKey>
 
 let storedEmails = []; // Store allowed sender emails temporarily
 

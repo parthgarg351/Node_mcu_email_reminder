@@ -3,13 +3,20 @@ const express = require("express");
 const Imap = require("node-imap");
 const cors = require("cors");
 const fetch = require("node-fetch");
-const { simpleParser } = require("mailparser"); // 📩 Parse email content
+const { simpleParser } = require("mailparser"); 
 const os = require("os");
 const axios = require("axios");
+const cron = require("node-cron");
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+let newsData = [];  // Stores fetched news articles
+let lastSentIndex = 0;  // Tracks the last sent article
+
+const NEWS_API_URL = process.env.NEWS_API_URL;  // Replace with actual API URL
 
 let storedEmails = []; // Store allowed sender emails temporarily
 
@@ -30,6 +37,46 @@ function getLocalIP() {
 const localIP = getLocalIP();
 
 let matchId = "115030"; // Default match ID
+
+async function fetchNews() {
+  try {
+    const response = await axios.get(NEWS_API_URL);
+    const articles = response.data.articles;
+
+    for (let article of articles) {
+      // Check for duplicate articles before adding
+      if (!newsData.some((news) => news.title === article.title)) {
+        newsData.push({ title: article.title, url: article.url });
+      }
+    }
+
+    console.log(`Updated news data. Total articles: ${newsData.length}`);
+  } catch (error) {
+    console.error("Error fetching news:", error);
+  }
+}
+
+// Schedule fetching every hour
+cron.schedule("0 * * * *", fetchNews);
+
+// Clear news data at midnight
+cron.schedule("0 0 * * *", () => {
+  newsData = [];
+  lastSentIndex = 0;
+  console.log("News data cleared.");
+});
+
+// API to serve one news title at a time
+app.get("/get-news-title", (req, res) => {
+  if (newsData.length === 0) {
+    return res.json({ title: "No news available" });
+  }
+
+  const newsItem = newsData[lastSentIndex];
+  lastSentIndex = (lastSentIndex + 1) % newsData.length;
+
+  res.json({ title: newsItem.title });
+});
 
 // Web UI to update matchId
 app.get("/", (req, res) => {
@@ -224,11 +271,15 @@ function checkEmails() {
   imap.connect();
 }
 
+
 // Run Email Check Every 60 Seconds
 setInterval(checkEmails, 60000);
+
 
 const PORT = 5000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://${localIP}:${PORT}`);
 });
+
+fetchNews();  // Fetch news on startup

@@ -135,11 +135,11 @@ app.get("/get-match", async (req, res) => {
       return res.json({ message: "Match is not live" });
     }
     if (data.runrate === "Data Not Found") data.runrate = "--";
-    if (data.runrate === "Match Stats Will Update Soon") data.runrate = "--";
+    if (data.runrate === "Match Stats will Update Soon") data.runrate = "--";
     if (data.batterone === "Data Not Found") data.batterone = "--";
-    if (data.batterone === "Match Stats Will Update Soon") data.batterone = "--";
+    if (data.batterone === "Match Stats will Update Soon") data.batterone = "--";
     if (data.battertwo === "Data Not Found") data.battertwo = "--";
-    if (data.battertwo === "Match Stats Will Update Soon") data.battertwo = "--";
+    if (data.battertwo === "Match Stats will Update Soon") data.battertwo = "--";
 
     res.json({
       title: data.title || "Unknown Match",
